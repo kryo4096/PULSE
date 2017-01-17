@@ -1,4 +1,4 @@
-package pulse;
+package pulse.ui;
 
 import javax.swing.*;
 

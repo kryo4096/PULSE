@@ -1,4 +1,4 @@
-package pulse;
+package pulse.net;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import pulse.Reference;
+
 /**
  * Created by kryo4096 on 10.01.2017.
  */
@@ -16,28 +18,38 @@ public class Receiver extends Thread {
 
     private int port;
     private IChatLogger logger;
-    private ArrayList<InetAddress> connections;
+    private InetAddress lastConnection;
+    private boolean untouched;
 
-    public Receiver(int port, IChatLogger logger) {
+    public InetAddress getLastConnection() {
+		return lastConnection;
+	}
+
+	public boolean isUntouched() {
+		return untouched;
+	}
+
+	public Receiver(int port, IChatLogger logger) {
         this.port = port;
         this.logger = logger;
         this.setDaemon(true);
-        connections = new ArrayList<>();
+        lastConnection = null;
+        untouched = true;
 
 
     }
 
-    public Receiver(int port) {
-        this(port, NullLogger.instance());
-    }
+  
 
     public void changeLogger(IChatLogger logger) {
         this.logger = logger;
     }
+    public void touch() {
+    	untouched = false;
+    }
+    public InetAddress lastConnection() {
 
-    public ArrayList<InetAddress> connections() {
-
-        return connections;
+        return lastConnection;
     }
 
     @Override
@@ -47,10 +59,11 @@ public class Receiver extends Thread {
             try (ServerSocket socket = new ServerSocket(port)) {
 
                 transmitter = socket.accept();
-                connections.add(transmitter.getInetAddress());
+                lastConnection = transmitter.getInetAddress();
+                untouched = false;
                 InputStream is = transmitter.getInputStream();
                 Scanner s = new Scanner(is);
-                s.useDelimiter("-E-N-D-");
+                s.useDelimiter(Reference.MSG_DELIM);
                 logger.log(transmitter.getInetAddress().toString(),s.next());
                 s.close();
                 is.close();
