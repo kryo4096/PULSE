@@ -1,20 +1,20 @@
 package pulse.net;
 
+import pulse.functional.OnConnectAction;
+
+
 public class NetListener extends Thread {
 	private Receiver receiver;
-	private Transmitter transmitter;
-	private IChatLogger logger;
+	private OnConnectAction action;
 	
-	
-	
-	public NetListener(Receiver receiver, Transmitter transmitter, IChatLogger logger) {
+	public NetListener(Receiver receiver, OnConnectAction action) {
 		super();
 		
 		setDaemon(true);
 		
 		this.receiver = receiver;
-		this.transmitter = transmitter;
-		this.logger = logger;
+		this.action = action;
+
 		
 		
 	}
@@ -25,20 +25,15 @@ public class NetListener extends Thread {
 		while(!isInterrupted()){
 			
 			if(!receiver.isUntouched()){
-				try {
-					transmitter.connect(receiver.lastConnection());
-					logger.syslog("Connected to: " + receiver.lastConnection());
+				
+					action.trigger(receiver.lastConnection());
+					
 					interrupt();
-				} catch (NoServerRunningException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 			}
 		}
 		
 	}
-	
-	
 	
 	
 }

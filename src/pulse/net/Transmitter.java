@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import pulse.Reference;
+import pulse.interfaces.IChatLogger;
 
 import static pulse.Reference.PORT;
 
@@ -19,6 +20,7 @@ public class Transmitter {
     private int port;
     private IChatLogger logger;
     private InetAddress connection;
+    
 
     public Transmitter(int port, IChatLogger logger) {
         this.port = port;
@@ -31,10 +33,15 @@ public class Transmitter {
 		}
     }
     
-    public void connect(InetAddress ip) throws NoServerRunningException{
-    	if(checkOnline(ip)){
+    
+    
+    public ServerState connect(InetAddress ip){
+    	ServerState state;
+    	state = checkState(ip);
+    	if(state.canConnect()){
     		connection = ip;
-    	} else throw new NoServerRunningException(PORT);
+    	}
+    	return state;
     }
 
     public void sendMessage(String message){
@@ -51,15 +58,17 @@ public class Transmitter {
 
     }
 
-    public static boolean checkOnline(InetAddress ip) {
+    private ServerState checkState(InetAddress ip) {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(ip, PORT));
             PrintStream ps = new PrintStream(socket.getOutputStream());
             ps.println(Reference.MSG_DELIM);
-            return true;
+            
+            return ServerState.ONLINE;
+            
 
         } catch (IOException e) {
-            return false;
+            return ServerState.OFFLINE;
         }
     }
 }

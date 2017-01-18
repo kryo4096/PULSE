@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import pulse.Reference;
+import pulse.interfaces.IChatLogger;
 
 /**
  * Created by kryo4096 on 10.01.2017.
@@ -64,7 +65,11 @@ public class Receiver extends Thread {
                 InputStream is = transmitter.getInputStream();
                 Scanner s = new Scanner(is);
                 s.useDelimiter(Reference.MSG_DELIM);
-                logger.log(transmitter.getInetAddress().toString(),s.next());
+                
+                String receivedMessage = s.next();
+                if(!receivedMessage.equals(System.lineSeparator())){
+                	logger.log(transmitter.getInetAddress().toString(),receivedMessage);
+                }
                 s.close();
                 is.close();
                 //PrintStream ps = new PrintStream(transmitter.getOutputStream());
