@@ -5,7 +5,7 @@ package pulse;
  */
 public class Reference {
 
-    public static final int PORT = 11235;
+    public static final int PORT = 80;
     public static final String NAME = "Pulse";
     public static final String VERSION = "0.1.0a";
     public static final String MSG_DELIM = "Ω";
