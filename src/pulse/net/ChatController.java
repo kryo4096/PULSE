@@ -40,10 +40,7 @@ public class ChatController {
 		
 		receiver = new Receiver(PORT, logger);
 		transmitter = new Transmitter(PORT, logger);
-		listener = new NetListener(receiver, ip -> {
-			connect(ip);
-			
-		});
+		listener = new NetListener(receiver, ip -> connect(ip));
 
 		receiver.start();
 		listener.start();
