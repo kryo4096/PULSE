@@ -49,8 +49,12 @@ public class ChatController {
 		
 		sendTrigger.setAction(() -> transmitter.sendMessage(source.getText()));
 
-		connectTrigger.setAction(() -> {
-			logger.clearCurrent();
+		connectTrigger.setAction(() -> initiateConnection());
+
+	}
+	
+	private void initiateConnection(){
+		logger.clearCurrent();
 			InetAddress address;
 			try {
 				address = InetAddress.getByName(ipSource.getText());
@@ -63,10 +67,7 @@ public class ChatController {
 			}
 			listener.interrupt();
 			connect(address);
-			
-		
-		});
-
+		connect();
 	}
 	
 	private void connect(InetAddress ip){
